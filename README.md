@@ -1,5 +1,9 @@
 # Recommender-Systems_Project
 
+## General instructions
+- Add a .env file to the root of the project(not inside src folder). In that file put DATA_PATH="your/path/to/the/movielensdata"
+- I added two new packages to the requirements.txt, so remember to download them!
+
 ## Instructions for the file data_loader.py
 The function **load_data()** loads the MovieLens data into 3 dataframes, movies, users and ratings
 
