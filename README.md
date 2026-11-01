@@ -15,8 +15,11 @@ Then, get the data for modeling with the line: **data_analysis.load_data_with_sp
 
 ### Instructions for the function load_data_with_splits
 All the parameters below are already given default values, but you can change them if you want:
-- Default train/validation/test split is set to 0.8/0.1/0.1
+- Default train/validation/test split is set to 0.8/0.1/0.1. The split is made temporally by just taking the first 80% of data for testing, the next 10% for validation and the last 10% for testing.
   
 - If you want that the validation and testing data does not have movies in it, that are absent from the training data, e.g. a cold start, set the parameter **remove_unknown_items** to **True**
 - If you want to remove users with low activity from the training, validation and testing data, set the parameter **remove_low_activity_users** to **True**, and give a some value to the parameter **low_activity_user_threshold**. If you set **remove_low_activity_users** to **True**, and **low_activity_user_threshold** to 3, then users that have given less than 3 reviews are removed from the data.
 - If you want to remove movies with low activity from the training, validation and testing data, set the parameter **remove_low_activity_items** to **True**, and give a some value to the parameter **low_activity_item_threshold**. If you set **remove_low_activity_items** to **True**, and **low_activity_item_threshold** to 3, then movies that have been given less than 3 reviews are removed from the data.
+
+### Instructions for the function data_summary
+Call this function if you want to print the characteristics of data and the plots for the interactions per user, interactions per item and the time span and how activity is distributed across it.
