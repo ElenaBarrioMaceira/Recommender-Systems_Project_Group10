@@ -126,3 +126,24 @@ class ItemKNN:
                 scores[movie_idx] = numerator / denominator
 
         return scores
+
+    def recommend(self, user_id, top_n=10):
+
+        # 1. Calculate scores for all items
+        scores = self.score_items(user_id)
+
+        # 2. Find items with valid scores
+        valid_indices = np.where(np.isfinite(scores))[0]
+
+        # 3. Sort valid items by score (highest first)
+        sorted_indices = valid_indices[
+            np.argsort(scores[valid_indices])[::-1]
+        ]
+
+        # 4. Select the top N items
+        top_indices = sorted_indices[:top_n]
+
+        # 5. Convert matrix indices to original MovieIDs
+        recommended_movies = self.movie_ids[top_indices]
+
+        return recommended_movies
