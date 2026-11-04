@@ -61,9 +61,37 @@ class ItemKNN:
 
         elif self.similarity == "pearson":
 
-            raise NotImplementedError(
-                "Pearson similarity will be implemented next"
-            )
+    # 1. Convert the sparse matrix to a dense matrix
+            ratings_matrix = self.user_item.toarray()
+
+    # 2. Replace missing ratings with NaN
+            ratings_matrix[ratings_matrix == 0] = np.nan
+
+    # 3. Calculate item-item Pearson correlations
+            n_items = len(self.movie_ids)
+            self.sim_matrix = np.zeros((n_items, n_items))
+
+            for i in range(n_items):
+                for j in range(i + 1, n_items):
+
+            # Users who rated both movies
+                    common_users = (
+                        ~np.isnan(ratings_matrix[:, i])
+                        & ~np.isnan(ratings_matrix[:, j])
+                    )
+
+                    if np.sum(common_users) < 2:
+                        continue
+
+                    ratings_i = ratings_matrix[common_users, i]
+                    ratings_j = ratings_matrix[common_users, j]
+
+            # Pearson correlation
+                    if np.std(ratings_i) > 0 and np.std(ratings_j) > 0:
+                        similarity = np.corrcoef(ratings_i, ratings_j)[0, 1]
+
+                        self.sim_matrix[i, j] = similarity
+                        self.sim_matrix[j, i] = similarity
 
         # 6. Exclude self-similarity
         np.fill_diagonal(self.sim_matrix, 0)
