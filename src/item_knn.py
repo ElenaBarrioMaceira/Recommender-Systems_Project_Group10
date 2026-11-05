@@ -186,7 +186,10 @@ class ItemKNN:
 
         # 3. Sort valid items by score (highest first)
         sorted_indices = valid_indices[
-            np.argsort(scores[valid_indices])[::-1]
+            np.lexsort((
+                self.movie_ids[valid_indices],
+                -scores[valid_indices]
+            ))
         ]
 
         # 4. Select the top N items

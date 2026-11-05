@@ -1,82 +1,82 @@
-import time
+import pandas as pd
 
 from data_analysis import load_data_with_splits
 from item_knn import ItemKNN
+from evaluation import prepare_evaluation_data, evaluate_recommender
 
 
-# Hyperparameters to test
-K_VALUES = [10, 20, 50]
 SIMILARITIES = ["cosine", "pearson"]
-
-# Number of users for the initial test
-N_TEST_USERS = 5
+K_VALUES = [10, 20, 50]
+TOP_N = 10
 
 
 def main():
 
-    # 1. Load the temporal train/validation/test splits
+    # Load the dataset and temporal splits
     data = load_data_with_splits()
 
     train = data.train
     validation = data.validation
 
-    print("Training ratings:", len(train))
-    print("Validation ratings:", len(validation))
+    # Prepare the same evaluation data used by Most Popular
+    validation_filtered, catalogue = prepare_evaluation_data(
+        train, validation
+    )
 
-    # 2. Select validation users who exist in training
-    train_users = set(train["UserID"].unique())
-    validation_users = set(validation["UserID"].unique())
+    print(f"Training ratings: {len(train)}")
+    print(f"Evaluation users: {validation_filtered['UserID'].nunique()}")
+    print(f"Catalogue size: {len(catalogue)}")
 
-    known_users = sorted(train_users.intersection(validation_users))
+    results = []
 
-    print("Validation users known in training:", len(known_users))
-
-    # Use a small sample while testing the pipeline
-    selected_users = known_users[:N_TEST_USERS]
-
-    # 3. Test each similarity method
+    # Train once for each similarity method
     for similarity in SIMILARITIES:
 
-        print(f"\n{'=' * 40}")
-        print("Similarity:", similarity)
-        print(f"{'=' * 40}")
+        print(f"\nTraining ItemKNN with {similarity} similarity...")
 
-        # Train once per similarity method
-        model = ItemKNN(k=20, similarity=similarity)
+        model = ItemKNN(
+            k=K_VALUES[0],
+            similarity=similarity
+        )
 
-        start_time = time.perf_counter()
         model.fit(train)
-        training_time = time.perf_counter() - start_time
 
-        print("Training time:", round(training_time, 2), "seconds")
+        # Evaluate different neighborhood sizes
+        for neighbors in K_VALUES:
 
-        # 4. Test different k values
-        for k in K_VALUES:
+            model.k = neighbors
 
-            model.k = k
+            print(f"Evaluating {similarity}, k={neighbors}...")
 
-            print(f"\n--- k = {k} ---")
-
-            # 5. Generate recommendations for validation users
-            for user_id in selected_users:
-
-                recommendations = model.recommend(
+            metrics = evaluate_recommender(
+                validation=validation_filtered,
+                recommend_function=lambda user_id, n: model.recommend(
                     user_id,
-                    top_n=10
-                )
+                    top_n=n
+                ),
+                catalogue=catalogue,
+                k=TOP_N
+            )
 
-                print(
-                    f"User {user_id}: {recommendations}"
-                )
+            results.append({
+                "Similarity": similarity,
+                "Neighbors": neighbors,
+                **metrics
+            })
 
-                # TODO:
-                # Evaluate recommendations using:
-                # - Precision@10
-                # - Recall@10
-                # - NDCG@10
-                #
-                # These metrics will be added when
-                # the evaluation module is available.
+    # Display results
+    results_df = pd.DataFrame(results)
+
+    print("\nItemKNN validation results:")
+    print(results_df.to_string(index=False))
+
+    # Save results
+    results_df.to_csv(
+        "item_knn_validation_results.csv",
+        index=False
+    )
+
+    print("\nResults saved to item_knn_validation_results.csv")
 
 
 if __name__ == "__main__":
