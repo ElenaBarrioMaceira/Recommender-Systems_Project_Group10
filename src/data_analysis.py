@@ -101,7 +101,7 @@ def get_data_characteristics(rating_data, user_data, movie_data) -> tuple[float,
     number_of_users = len(user_data)
     number_of_movies = len(movie_data)
     density = number_of_ratings / (number_of_users * number_of_movies)
-    sparsity = 100 - density
+    sparsity = 1 - density
     return density, sparsity
 
 
