@@ -1,0 +1,2 @@
+Model,Weighting,Precision@10,Recall@10,NDCG@10,Catalogue Coverage
+Content-based,user_mean,0.023689516129032258,0.008399204681900571,0.026953152290141263,0.4257236482796286
