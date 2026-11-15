@@ -1,0 +1,2 @@
+Precision@10,Recall@10,NDCG@10,Catalogue Coverage,Evaluated users,Model,Factors,Iterations,Regularization,Seed,Train fraction,Training interactions,NDCG@10 CI lower,NDCG@10 CI upper
+0.0967741935483871,0.030528301264044207,0.102728442405639,0.2580557072637903,992,Matrix Factorization ALS,120,20,0.05,42,1.0,800167,0.09296560669587542,0.11253598690647539

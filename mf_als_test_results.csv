@@ -1,0 +1,2 @@
+Model,Factors,Iterations,Regularization,Seed,Precision@10,Recall@10,NDCG@10,Catalogue Coverage
+Matrix Factorization ALS,120,20,0.05,42,0.0967741935483871,0.030528301264044207,0.102728442405639,0.2580557072637903
