@@ -281,6 +281,43 @@ The selected configurations are:
 
 The test set is not used for hyperparameter selection.
 
+### 7.7 User-based k-nearest neighbours
+UserKNN is implemented in 'src/part_2/user_knn.py'
+The model uses a sparse user-item rating matrix to calculate similarities between users based on movies they have both rated. Two similarity measures are considered:
+**Cosine similarity**
+Measures similarity between users by comparing their rating vectors over co-rated movies.
+**Pearson correlation**
+Measures the linear relationship between the ratings on two users, using only  movies rated by both users. At least two co-rated movies are required.
+
+For each candidate movie, UserKNN:
+1. Identifies users who have rated the candidate movie
+2. Keeps neighbours with positive similarity to the target user.
+3. Selects up to k neighbours with the highest similarity
+4. Calculates a similarity-weighted prediction using deviations from each neighbour's average rating.
+5. Ranks candidate movies by their predicted scores
+
+Previously rated movies and movies without valid predictions are excluded from the recommendation list. Ties are resolved using the smallest MovieID. To improve execution time, the implementation stores calculated user similarities, user mean ratings, and the users who rated each movie. It also calculates similarities once per target user when generating recommendations.
+
+### Significance-weighted UserKNN
+An additional variant uses significance weighting to reduce the influence of similarities calculated from very few co-rated movies.
+The adjusted similarity is calculated as:
+'adjusted_similarity = similarity * min(n_common, threshold) / threshold'
+where 'n_common' represents the number os co-rated movies and 'threshold' controls the minimum overlap needed to retain the full similarity value.
+The implementation supports both the original and significance-weighted versions through the optional 'significance_threshold' parameter. The significance-weighted configurations were tested with threshold of 25 and 50. The model also applies mean-centred rating predictions to account for differences in users' rating scales.
+
+### 7.9 Hyperparameter Selection
+UserKNN configurations are evaluated using the validation set.
+The valuated parameters include:
+- Similarity measures: Consine and Pearson.
+- Neighbourhood sizes: 'k = 10, 20, 50'
+- Significance weighting disabled, threshold 25, or threshold 50.
+The main selection criterion is NDCG@10 on validation data.
+The current selected configuration is:
+| Model | Selected parameters |
+|---|---|
+| UserKNN Pearson weighted | 'k = 10', 'significance_threshold = 50' |
+The selected configuration achieved the highest validation NDCG@10 among the three configurations evaluated on all 492 eligible validation users.
+
 ## 8. Evaluation Metrics
 
 The evaluation functions are implemented in `src/evaluation.py`.
