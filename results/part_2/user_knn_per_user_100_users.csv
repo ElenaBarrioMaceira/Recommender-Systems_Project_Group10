@@ -1,0 +1,301 @@
+UserID,Precision@10,Recall@10,NDCG@10,Model,Similarity,Neighbors,Significance Threshold
+635,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+639,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+646,0.4,0.03669724770642202,0.3227266260473091,Pearson weighted 50,pearson,20,50
+648,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+649,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+651,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+660,0.1,0.012345679012345678,0.06362078819895171,Pearson weighted 50,pearson,20,50
+664,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+667,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+671,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+673,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+676,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+678,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+692,0.2,0.014184397163120567,0.15139734109601002,Pearson weighted 50,pearson,20,50
+693,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+710,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+711,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+712,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+714,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+716,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+721,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+725,0.1,0.02857142857142857,0.06362078819895171,Pearson weighted 50,pearson,20,50
+727,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+735,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+736,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+737,0.1,0.045454545454545456,0.06625422345438903,Pearson weighted 50,pearson,20,50
+738,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+739,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+745,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+746,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+749,0.1,0.05555555555555555,0.06943122193677727,Pearson weighted 50,pearson,20,50
+750,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+752,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+753,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+754,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+760,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+767,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+770,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+777,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+787,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+796,0.1,0.014285714285714285,0.07839826897867533,Pearson weighted 50,pearson,20,50
+822,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+823,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+840,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+846,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+855,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+862,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+864,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+878,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+879,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+884,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+890,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+894,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+897,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+904,0.1,0.015384615384615385,0.06362078819895171,Pearson weighted 50,pearson,20,50
+911,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+914,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+921,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+922,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+929,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+935,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+936,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+943,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+953,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+957,0.1,0.0078125,0.06625422345438903,Pearson weighted 50,pearson,20,50
+970,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+973,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+975,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+981,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+984,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+987,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+988,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+990,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+993,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+996,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1001,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1002,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1015,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1019,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1026,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1033,0.1,0.03225806451612903,0.08514311764162098,Pearson weighted 50,pearson,20,50
+1034,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1043,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1050,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1058,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1064,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1068,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1073,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1077,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1086,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1087,0.1,0.018867924528301886,0.06943122193677727,Pearson weighted 50,pearson,20,50
+1088,0.2,0.0425531914893617,0.16421958630632802,Pearson weighted 50,pearson,20,50
+1105,0.2,0.022727272727272728,0.13568544539116628,Pearson weighted 50,pearson,20,50
+1109,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1113,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1117,0.1,0.0049261083743842365,0.06362078819895171,Pearson weighted 50,pearson,20,50
+1120,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1124,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1125,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+1130,0.0,0.0,0.0,Pearson weighted 50,pearson,20,50
+635,0.1,0.016129032258064516,0.07336392209936005,Cosine weighted 50,cosine,20,50
+639,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+646,0.1,0.009174311926605505,0.06625422345438903,Cosine weighted 50,cosine,20,50
+648,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+649,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+651,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+660,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+664,0.1,0.009433962264150943,0.06362078819895171,Cosine weighted 50,cosine,20,50
+667,0.2,0.08333333333333333,0.14279514403613733,Cosine weighted 50,cosine,20,50
+671,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+673,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+676,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+678,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+692,0.1,0.0070921985815602835,0.06362078819895171,Cosine weighted 50,cosine,20,50
+693,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+710,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+711,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+712,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+714,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+716,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+721,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+725,0.1,0.02857142857142857,0.07336392209936005,Cosine weighted 50,cosine,20,50
+727,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+735,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+736,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+737,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+738,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+739,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+745,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+746,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+749,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+750,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+752,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+753,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+754,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+760,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+767,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+770,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+777,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+787,0.1,0.043478260869565216,0.06362078819895171,Cosine weighted 50,cosine,20,50
+796,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+822,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+823,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+840,0.1,0.011111111111111112,0.06362078819895171,Cosine weighted 50,cosine,20,50
+846,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+855,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+862,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+864,0.1,0.010309278350515464,0.06362078819895171,Cosine weighted 50,cosine,20,50
+878,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+879,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+884,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+890,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+894,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+897,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+904,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+911,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+914,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+921,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+922,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+929,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+935,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+936,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+943,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+953,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+957,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+970,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+973,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+975,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+981,0.1,0.018518518518518517,0.06943122193677727,Cosine weighted 50,cosine,20,50
+984,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+987,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+988,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+990,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+993,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+996,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1001,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1002,0.1,0.023809523809523808,0.07336392209936005,Cosine weighted 50,cosine,20,50
+1015,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1019,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1026,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1033,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1034,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1043,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1050,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1058,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1064,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1068,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1073,0.1,0.0625,0.06362078819895171,Cosine weighted 50,cosine,20,50
+1077,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1086,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1087,0.1,0.018867924528301886,0.07336392209936005,Cosine weighted 50,cosine,20,50
+1088,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1105,0.2,0.022727272727272728,0.13961814555374907,Cosine weighted 50,cosine,20,50
+1109,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1113,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1117,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1120,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1124,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1125,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+1130,0.0,0.0,0.0,Cosine weighted 50,cosine,20,50
+635,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+639,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+646,0.4,0.03669724770642202,0.32776097292662437,Pearson weighted 50 k10,pearson,10,50
+648,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+649,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+651,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+660,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+664,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+667,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+671,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+673,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+676,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+678,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+692,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+693,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+710,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+711,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+712,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+714,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+716,0.1,0.022222222222222223,0.08514311764162098,Pearson weighted 50 k10,pearson,10,50
+721,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+725,0.1,0.02857142857142857,0.06362078819895171,Pearson weighted 50 k10,pearson,10,50
+727,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+735,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+736,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+737,0.2,0.09090909090909091,0.17993148201117176,Pearson weighted 50 k10,pearson,10,50
+738,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+739,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+745,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+746,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+749,0.1,0.05555555555555555,0.07839826897867533,Pearson weighted 50 k10,pearson,10,50
+750,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+752,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+753,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+754,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+760,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+767,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+770,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+777,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+787,0.1,0.043478260869565216,0.07336392209936005,Pearson weighted 50 k10,pearson,10,50
+796,0.1,0.014285714285714285,0.07839826897867533,Pearson weighted 50 k10,pearson,10,50
+822,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+823,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+840,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+846,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+855,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+862,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+864,0.1,0.010309278350515464,0.06943122193677727,Pearson weighted 50 k10,pearson,10,50
+878,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+879,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+884,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+890,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+894,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+897,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+904,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+911,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+914,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+921,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+922,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+929,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+935,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+936,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+943,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+953,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+957,0.1,0.0078125,0.07336392209936005,Pearson weighted 50 k10,pearson,10,50
+970,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+973,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+975,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+981,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+984,0.1,0.014084507042253521,0.06362078819895171,Pearson weighted 50 k10,pearson,10,50
+987,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+988,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+990,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+993,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+996,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1001,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1002,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1015,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1019,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1026,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1033,0.2,0.06451612903225806,0.13305201013572898,Pearson weighted 50 k10,pearson,10,50
+1034,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1043,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1050,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1058,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1064,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1068,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1073,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1077,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1086,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1087,0.1,0.018867924528301886,0.07336392209936005,Pearson weighted 50 k10,pearson,10,50
+1088,0.2,0.0425531914893617,0.13961814555374907,Pearson weighted 50 k10,pearson,10,50
+1105,0.4,0.045454545454545456,0.2726701556894781,Pearson weighted 50 k10,pearson,10,50
+1109,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1113,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1117,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1120,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1124,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1125,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
+1130,0.0,0.0,0.0,Pearson weighted 50 k10,pearson,10,50
