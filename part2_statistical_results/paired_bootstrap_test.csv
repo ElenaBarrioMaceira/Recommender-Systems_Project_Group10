@@ -1,0 +1,2 @@
+Model A,Model B,Common users,Mean NDCG difference,CI lower 95%,CI upper 95%,CI excludes zero
+Content-based,MF-ALS,992,-0.07577529011549772,-0.0855359450174957,-0.06575908488434444,True
