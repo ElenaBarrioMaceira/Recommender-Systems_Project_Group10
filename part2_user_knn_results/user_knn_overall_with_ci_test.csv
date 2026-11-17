@@ -1,0 +1,2 @@
+Precision@10,Recall@10,NDCG@10,Catalogue Coverage,Evaluated users,Model,Similarity,Neighbours,Significance threshold,Seed,Train fraction,Training interactions,NDCG@10 CI lower,NDCG@10 CI upper
+0.03931451612903226,0.012171391469170848,0.03217756696639196,0.11469142545057345,992,UserKNN,pearson,10,50,42,1.0,800167,0.02801864447218632,0.03656150036632084
