@@ -1,5 +1,5 @@
 """
-Reproduce all Part 1 experiments and data characterization figures.
+Reproduce all Part 1 and Part 2 experiments and data characterization figures.
 
 Usage:
     python run_all.py
@@ -17,6 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
+PART2 = SRC / "part_2"
 
 
 def generate_data_figures(output_dir):
@@ -95,11 +96,14 @@ def run_script(script_name):
         check=True,
     )
 
+def run_part2_script(script_name):
+    """Execute Part 2 script using the existing runner."""
+    run_script(f"part_2/{script_name}")
 
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Reproduce all Part 1 experiments."
+        description="Reproduce all Part 1 and Part 2 experiments."
     )
 
     parser.add_argument(
@@ -146,7 +150,7 @@ def main():
             f"{', '.join(missing_files)}"
         )
 
-    print("\nRECOMMENDER SYSTEMS - PART 1")
+    print("\nRECOMMENDER SYSTEMS - PART 1 and PART 2")
     print("Reproducing experiments and results")
     print(f"Dataset: {dataset}")
 
@@ -207,6 +211,46 @@ def main():
     run_script("compare_models.py")
 
     # --------------------------------------------------
+    # PART 2: HYPERPARAMETER TUNING
+    # --------------------------------------------------
+
+    print("\nPART 2 : HYPERPARAMETER TUNING", flush=True)
+
+    run_part2_script("tune_content_based.py")
+    run_part2_script("tune_mf_als.py")
+    run_part2_script("run_user_knn_experiments.py")
+
+    # --------------------------------------------------
+    # PART 2: FINAL TEST EVALUATION
+    # --------------------------------------------------
+    
+    print("\nPART 2 : FINAL TEST EVALUATION", flush=True)
+    
+    run_part2_script("evaluate_content_based_test.py")
+    run_part2_script("evaluate_mf_als_test.py")
+    run_part2_script("test_user_knn_final.py")
+
+    # --------------------------------------------------
+    # PART 2: ADDITIONAL ANALYSIS
+    # --------------------------------------------------
+    
+    print("\nPART 2 : ADDITIONAL ANALYSES", flush=True)
+    
+    run_part2_script("part2_content_analysis.py")
+    run_part2_script("part2_mf_als_analysis.py")
+    run_part2_script("part2_user_knn_analysis.py")
+
+    # --------------------------------------------------
+    # PART 2: COMPARISON BETWEEN MODELS
+    # --------------------------------------------------
+    
+    print("\nPART 2 : COMPARISON BETWEEN MODELS", flush=True)
+    
+    run_part2_script("statistical_tests.py")
+    run_part2_script("disaggregated.py")
+    run_part2_script("sparsity_comparison.py")
+
+    # --------------------------------------------------
     # SUMMARY
     # --------------------------------------------------
 
@@ -228,6 +272,31 @@ def main():
     print("  - figures/rating_distribution.png")
     print("  - figures/time_distribution.png")
 
+    # --------------------------------------------------
+    # PART 2 SUMMARY
+    # --------------------------------------------------
+
+    print("\nPart 2 - Generated CSV files:")
+
+    print("\nHyperparameter tuning:")
+    print("  - content_based_validation_results.csv")
+    print("  - mf_als_tuning_results.csv")
+    print("  - results/part_2/user_knn_validation_492_users.csv")
+
+    print("\nFinal test evaluation:")
+    print("  - content_based_test_results.csv")
+    print("  - mf_als_test_results.csv")
+    print("  - results/part_2/user_knn_test_results.csv")
+
+    print("\nAdditional model analyses:")
+    print("  - part2_content_results/")
+    print("  - part2_mf_als_results/")
+    print("  - part2_user_knn_results/")
+
+    print("\nCross-model comparisons:")
+    print("  - part2_statistical_results/paired_bootstrap_test.csv")
+    print("  - part2_disaggregated_results/disaggregated_comparison_test.csv")
+    print("  - part2_sparsity_results/sparsity_comparison_test.csv")
 
 if __name__ == "__main__":
     main()
