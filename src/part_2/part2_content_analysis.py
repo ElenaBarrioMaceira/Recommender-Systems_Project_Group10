@@ -4,16 +4,10 @@ Part 2 - Content-based additional analyses.
 Includes:
 1. User-level evaluation
 2. Bootstrap confidence interval for NDCG@10
-3. Disaggregated results:
-   - Low-activity vs high-activity users
-   - Popular vs long-tail items
-4. Sparsity ablation:
-   - 100% training interactions
-   - 50% training interactions
-   - 20% training interactions
+3. Disaggregated analysis
+4. Sparsity ablation
 
-Hyperparameters were selected on validation.
-Test is used for reporting, not tuning.
+Evaluation metrics are imported from Part 1.
 """
 
 from pathlib import Path
@@ -33,7 +27,15 @@ ROOT_DIR = SRC_DIR.parent
 sys.path.insert(0, str(SRC_DIR))
 
 from data_analysis import load_data_with_splits
-from evaluation import prepare_evaluation_data
+
+from evaluation import (
+    prepare_evaluation_data,
+    precision_at_k,
+    recall_at_k,
+    ndcg_at_k,
+    catalogue_coverage,
+)
+
 from part_2.content_based import ContentBased
 
 
@@ -42,9 +44,7 @@ from part_2.content_based import ContentBased
 # --------------------------------------------------
 
 K = 10
-
 SEED = 42
-
 N_BOOTSTRAP = 2000
 
 TRAIN_FRACTIONS = [1.0, 0.5, 0.2]
@@ -53,62 +53,14 @@ OUTPUT_DIR = ROOT_DIR / "part2_content_results"
 
 
 # --------------------------------------------------
-# Evaluation metrics
-# --------------------------------------------------
-
-def precision_at_k(recommendations, relevant, k=10):
-
-    hits = sum(
-        movie_id in relevant
-        for movie_id in recommendations[:k]
-    )
-
-    return hits / k
-
-
-def recall_at_k(recommendations, relevant, k=10):
-
-    if len(relevant) == 0:
-        return 0.0
-
-    hits = sum(
-        movie_id in relevant
-        for movie_id in recommendations[:k]
-    )
-
-    return hits / len(relevant)
-
-
-def ndcg_at_k(recommendations, relevant, k=10):
-
-    if len(relevant) == 0:
-        return 0.0
-
-    dcg = sum(
-        1.0 / np.log2(rank + 2)
-        for rank, movie_id in enumerate(recommendations[:k])
-        if movie_id in relevant
-    )
-
-    ideal_length = min(k, len(relevant))
-
-    idcg = sum(
-        1.0 / np.log2(rank + 2)
-        for rank in range(ideal_length)
-    )
-
-    return dcg / idcg if idcg > 0 else 0.0
-
-
-# --------------------------------------------------
-# Train model
+# Model training
 # --------------------------------------------------
 
 def train_model(train, movies):
 
     model = ContentBased(
         weighting="user_mean",
-        year_weight=2.0
+        year_weight=2.0,
     )
 
     model.fit(train, movies)
@@ -117,20 +69,18 @@ def train_model(train, movies):
 
 
 # --------------------------------------------------
-# Prepare fixed evaluation cohort
+# Fixed evaluation cohort
 # --------------------------------------------------
 
 def prepare_fixed_cohort(train, test):
 
     test_filtered, catalogue = prepare_evaluation_data(
         train,
-        test
+        test,
     )
 
     relevant = (
-        test_filtered[
-            test_filtered["Rating"] >= 4
-        ]
+        test_filtered[test_filtered["Rating"] >= 4]
         .groupby("UserID")["MovieID"]
         .apply(set)
         .to_dict()
@@ -140,7 +90,7 @@ def prepare_fixed_cohort(train, test):
 
 
 # --------------------------------------------------
-# Evaluate each user
+# Per-user evaluation
 # --------------------------------------------------
 
 def evaluate_users(model, relevant, catalogue):
@@ -152,15 +102,17 @@ def evaluate_users(model, relevant, catalogue):
 
         recs = model.recommend(
             user_id=user_id,
-            top_n=K
+            top_n=K,
         )
 
         if len(recs) != len(set(recs)):
-            raise ValueError("Duplicate recommendations")
+            raise ValueError(
+                f"Duplicate recommendations for user {user_id}"
+            )
 
         if not set(recs).issubset(catalogue):
             raise ValueError(
-                "Recommendations outside evaluation catalogue"
+                f"Recommendations outside catalogue for user {user_id}"
             )
 
         recommendations[user_id] = recs
@@ -168,34 +120,25 @@ def evaluate_users(model, relevant, catalogue):
         rows.append({
             "UserID": user_id,
             "Precision@10": precision_at_k(
-                recs, relevant_movies, K
+                recs,
+                relevant_movies,
+                K,
             ),
             "Recall@10": recall_at_k(
-                recs, relevant_movies, K
+                recs,
+                relevant_movies,
+                K,
             ),
             "NDCG@10": ndcg_at_k(
-                recs, relevant_movies, K
-            )
+                recs,
+                relevant_movies,
+                K,
+            ),
         })
 
-    return pd.DataFrame(rows), recommendations
+    scores = pd.DataFrame(rows)
 
-
-# --------------------------------------------------
-# Catalogue coverage
-# --------------------------------------------------
-
-def catalogue_coverage(recommendations, catalogue):
-
-    recommended_items = set()
-
-    for recs in recommendations.values():
-        recommended_items.update(recs)
-
-    if len(catalogue) == 0:
-        return 0.0
-
-    return len(recommended_items & catalogue) / len(catalogue)
+    return scores, recommendations
 
 
 # --------------------------------------------------
@@ -210,9 +153,9 @@ def calculate_overall(scores, recommendations, catalogue):
         "NDCG@10": scores["NDCG@10"].mean(),
         "Catalogue Coverage": catalogue_coverage(
             recommendations,
-            catalogue
+            catalogue,
         ),
-        "Evaluated users": len(scores)
+        "Evaluated users": len(scores),
     }
 
 
@@ -224,7 +167,7 @@ def bootstrap_confidence_interval(
     scores,
     metric="NDCG@10",
     n_bootstrap=N_BOOTSTRAP,
-    seed=SEED
+    seed=SEED,
 ):
 
     values = scores[metric].to_numpy(dtype=float)
@@ -241,19 +184,21 @@ def bootstrap_confidence_interval(
         sample = rng.choice(
             values,
             size=len(values),
-            replace=True
+            replace=True,
         )
 
         bootstrap_means[i] = sample.mean()
 
-    lower = np.quantile(bootstrap_means, 0.025)
-    upper = np.quantile(bootstrap_means, 0.975)
+    lower, upper = np.quantile(
+        bootstrap_means,
+        [0.025, 0.975],
+    )
 
     return lower, upper
 
 
 # --------------------------------------------------
-# Disaggregation 1: user activity
+# Disaggregation: user activity
 # --------------------------------------------------
 
 def analyse_user_activity(scores, train):
@@ -269,7 +214,7 @@ def analyse_user_activity(scores, train):
     labelled["Segment"] = np.where(
         counts <= threshold,
         "Low activity",
-        "High activity"
+        "High activity",
     )
 
     rows = []
@@ -283,20 +228,20 @@ def analyse_user_activity(scores, train):
             "Threshold": threshold,
             "Precision@10": group["Precision@10"].mean(),
             "Recall@10": group["Recall@10"].mean(),
-            "NDCG@10": group["NDCG@10"].mean()
+            "NDCG@10": group["NDCG@10"].mean(),
         })
 
     return rows
 
 
 # --------------------------------------------------
-# Disaggregation 2: item popularity
+# Disaggregation: item popularity
 # --------------------------------------------------
 
 def analyse_item_popularity(
     recommendations,
     relevant,
-    train
+    train,
 ):
 
     popularity = train.groupby("MovieID").size()
@@ -311,12 +256,12 @@ def analyse_item_popularity(
         popularity[popularity <= threshold].index
     )
 
-    rows = []
-
     groups = {
         "Popular": popular_items,
-        "Long tail": long_tail_items
+        "Long tail": long_tail_items,
     }
+
+    rows = []
 
     for segment, items in groups.items():
 
@@ -333,14 +278,20 @@ def analyse_item_popularity(
 
             user_rows.append({
                 "Precision@10": precision_at_k(
-                    recs, segment_relevant, K
+                    recs,
+                    segment_relevant,
+                    K,
                 ),
                 "Recall@10": recall_at_k(
-                    recs, segment_relevant, K
+                    recs,
+                    segment_relevant,
+                    K,
                 ),
                 "NDCG@10": ndcg_at_k(
-                    recs, segment_relevant, K
-                )
+                    recs,
+                    segment_relevant,
+                    K,
+                ),
             })
 
         segment_scores = pd.DataFrame(user_rows)
@@ -349,13 +300,13 @@ def analyse_item_popularity(
             "Dimension": "Item popularity",
             "Segment": segment,
             "Users": len(user_rows),
-            "Threshold": threshold
+            "Threshold": threshold,
         }
 
         for metric in [
             "Precision@10",
             "Recall@10",
-            "NDCG@10"
+            "NDCG@10",
         ]:
 
             if len(segment_scores) > 0:
@@ -369,7 +320,7 @@ def analyse_item_popularity(
 
 
 # --------------------------------------------------
-# Sparsity: reproducible interaction subsampling
+# Sparsity: training subsets
 # --------------------------------------------------
 
 def create_train_subsets(train):
@@ -411,7 +362,7 @@ def main():
 
     OUTPUT_DIR.mkdir(
         parents=True,
-        exist_ok=True
+        exist_ok=True,
     )
 
     print("Loading MovieLens 1M data...")
@@ -422,12 +373,12 @@ def main():
     test = data.test
     movies = data.movie_data
 
-    # Use the same evaluation cohort throughout
     relevant, catalogue = prepare_fixed_cohort(
         train,
-        test
+        test,
     )
 
+    print("Training interactions:", len(train))
     print("Evaluated users:", len(relevant))
     print("Catalogue size:", len(catalogue))
 
@@ -442,18 +393,18 @@ def main():
     scores, recommendations = evaluate_users(
         model,
         relevant,
-        catalogue
+        catalogue,
     )
 
     scores.to_csv(
         OUTPUT_DIR / "content_per_user_test.csv",
-        index=False
+        index=False,
     )
 
     overall = calculate_overall(
         scores,
         recommendations,
-        catalogue
+        catalogue,
     )
 
     ci_lower, ci_upper = bootstrap_confidence_interval(
@@ -465,7 +416,7 @@ def main():
         "Train fraction": 1.0,
         "Training interactions": len(train),
         "NDCG@10 CI lower": ci_lower,
-        "NDCG@10 CI upper": ci_upper
+        "NDCG@10 CI upper": ci_upper,
     })
 
     print("\nOVERALL TEST RESULTS")
@@ -475,7 +426,7 @@ def main():
 
     pd.DataFrame([overall]).to_csv(
         OUTPUT_DIR / "content_overall_with_ci_test.csv",
-        index=False
+        index=False,
     )
 
     # --------------------------------------------------
@@ -490,17 +441,15 @@ def main():
         analyse_item_popularity(
             recommendations,
             relevant,
-            train
+            train,
         )
     )
 
-    disaggregated_df = pd.DataFrame(
-        disaggregated
-    )
+    disaggregated_df = pd.DataFrame(disaggregated)
 
     disaggregated_df.to_csv(
         OUTPUT_DIR / "content_disaggregated_test.csv",
-        index=False
+        index=False,
     )
 
     print(disaggregated_df.to_string(index=False))
@@ -523,19 +472,21 @@ def main():
 
         reduced_model = train_model(
             reduced_train,
-            movies
+            movies,
         )
 
-        reduced_scores, reduced_recommendations = evaluate_users(
-            reduced_model,
-            relevant,
-            catalogue
+        reduced_scores, reduced_recommendations = (
+            evaluate_users(
+                reduced_model,
+                relevant,
+                catalogue,
+            )
         )
 
         metrics = calculate_overall(
             reduced_scores,
             reduced_recommendations,
-            catalogue
+            catalogue,
         )
 
         lower, upper = bootstrap_confidence_interval(
@@ -547,7 +498,7 @@ def main():
             "Train fraction": fraction,
             "Training interactions": len(reduced_train),
             "NDCG@10 CI lower": lower,
-            "NDCG@10 CI upper": upper
+            "NDCG@10 CI upper": upper,
         })
 
         sparsity_results.append(metrics)
@@ -556,13 +507,11 @@ def main():
             f"NDCG@10: {metrics['NDCG@10']:.4f}"
         )
 
-    sparsity_df = pd.DataFrame(
-        sparsity_results
-    )
+    sparsity_df = pd.DataFrame(sparsity_results)
 
     sparsity_df.to_csv(
         OUTPUT_DIR / "content_sparsity_test.csv",
-        index=False
+        index=False,
     )
 
     print("\nSPARSITY RESULTS")
