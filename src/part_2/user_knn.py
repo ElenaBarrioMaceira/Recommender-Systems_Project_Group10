@@ -52,13 +52,20 @@ class UserKNN:
             (ratings, (user_indices, movie_indices)),
             shape=(len(self.user_ids), len(self.movie_ids))
         )
-        self. user_means = np.array([np.mean(self.user_item.getrow(user_idx).data) for user_idx in range(len(self.user_ids))])
+        self.user_item.sort_indices()
+        self.user_means = np.array([np.mean(self.user_item.getrow(user_idx).data) for user_idx in range(len(self.user_ids))])
 
-        #Used for storing the users who rated each movie
+        self.movie_user = self.user_item.tocsc()
+        self.movie_user.sort_indices()
+
+        #Used for storing the users who rated each movie and their corresponding ratings
         self.movie_raters = {}
+        self.movie_ratings = {}
         for movie_idx in range(len(self.movie_ids)):
-            rated_users = self.user_item.getcol(movie_idx).nonzero()[0]
-            self.movie_raters[movie_idx] = rated_users
+            start = self.movie_user.indptr[movie_idx]
+            end = self.movie_user.indptr[movie_idx + 1]
+            self.movie_raters[movie_idx] = self.movie_user.indices[start:end]
+            self.movie_ratings[movie_idx] = self.movie_user.data[start:end]
 
         #Used for storing calculates similarities to avoid repeated calculations
         self.similarity_cache = {}
@@ -75,18 +82,27 @@ class UserKNN:
             return self.similarity_cache[pair]
 
         #Get the ratings of both users
-        user_1 = self.user_item.getrow(self.user_to_idx[user1])
-        user_2 = self.user_item.getrow(self.user_to_idx[user2])
+        user1_idx = self.user_to_idx[user1]
+        user2_idx = self.user_to_idx[user2]
 
-        #Find movies rated by both users
-        common_movies = np.intersect1d(user_1.indices, user_2.indices)
+        start = self.user_item.indptr[user1_idx]
+        end = self.user_item.indptr[user1_idx + 1]
+        start2 = self.user_item.indptr[user2_idx]
+        end2 = self.user_item.indptr[user2_idx + 1]
+        movies = self.user_item.indices[start:end]
+        movies2 = self.user_item.indices[start2:end2]
+        values = self.user_item.data[start:end]
+        values2 = self.user_item.data[start2:end2]
+
+        #Find common movies and their positions in both rating arrays
+        common_movies, positions1, positions2 = np.intersect1d(movies, movies2, assume_unique = True, return_indices = True)
         if len(common_movies) < 2:
             self.similarity_cache[pair] = 0.0
             return 0.0
 
         #Get ratings for the common movies
-        ratings_1 = user_1[:, common_movies].toarray().ravel() 
-        ratings_2 = user_2[:, common_movies].toarray().ravel() 
+        ratings_1 = values[positions1]
+        ratings_2 = values2[positions2]
 
         if self.similarity == "pearson":
             if np.std(ratings_1) == 0 or np.std(ratings_2) == 0:
@@ -193,20 +209,24 @@ class UserKNN:
             if movie_idx in rated_indices:
                 continue
 
-            #Get users who rated this movie
+            #Retrieve users and ratings directly from cached CSC columns
             rated_users = self.movie_raters[movie_idx]
+            movie_ratings = self.movie_ratings[movie_idx]
             #Keep only users with positive similarity
-            valid_users = rated_users[similarities[rated_users] > 0]
+            valid_mask = similarities[rated_users] > 0
+            valid_users = rated_users[valid_mask]
+            valid_ratings = movie_ratings[valid_mask]
             if len(valid_users) == 0:
                 continue
 
-            #Select the k most similar users
-            sorted_users = valid_users[np.lexsort((self.user_ids[valid_users], -similarities[valid_users]))]
-            neighbours = sorted_users[:self.k]
+            #Sort by similarity, breaking ties using UserIDç
+            order = np.lexsort((self.user_ids[valid_users], -similarities[valid_users]))
 
-            #Get neighbour similarities, ratings and averages
+            #Select the k most similar neighbours
+            selected = order[:self.k]
+            neighbours = valid_users[selected]
+            ratings = valid_ratings[selected]
             weights = similarities[neighbours]
-            ratings = self.user_item[neighbours, movie_idx].toarray().ravel()
             neighbour_means = self.user_means[neighbours]
             numerator = np.sum(weights *(ratings - neighbour_means))
             denominator = np.sum(np.abs(weights))
