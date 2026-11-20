@@ -26,7 +26,7 @@ def main():
     
         print("Training ratings:", len(train))
         print("Test ratings:", len(test))
-        print("Eligible test users:", test_filtered["UserID"].nunique)
+        print("Eligible test users:", test_filtered["UserID"].nunique())
         print("Catalogue size:", len(catalogue))
 
          #Train the selected UserKNN model
@@ -48,7 +48,7 @@ def main():
         #Save final results
         output_dir = Path("results") / "part_2"
         output_dir.mkdir(parents=True, exist_ok=True)
-        output_file = output_dir / "user_kenn_test_results.csv"
+        output_file = output_dir / "user_knn_test_results.csv"
         results_df = pd.DataFrame([{
             "Model": "UserKNN",
             "Similarity": SIMILARITY,
