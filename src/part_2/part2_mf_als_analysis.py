@@ -33,7 +33,13 @@ ROOT_DIR = SRC_DIR.parent
 sys.path.insert(0, str(SRC_DIR))
 
 from data_analysis import load_data_with_splits
-from evaluation import prepare_evaluation_data
+from evaluation import (
+    precision_at_k,
+    recall_at_k,
+    ndcg_at_k,
+    catalogue_coverage,
+    prepare_evaluation_data,
+)
 from part_2.mf_als import MatrixFactorizationALS
 
 
@@ -50,46 +56,6 @@ N_BOOTSTRAP = 2000
 TRAIN_FRACTIONS = [1.0, 0.5, 0.2]
 
 OUTPUT_DIR = ROOT_DIR / "part2_mf_als_results"
-
-
-# --------------------------------------------------
-# Evaluation metrics
-# --------------------------------------------------
-
-
-def precision_at_k(recommendations, relevant, k=10):
-
-    hits = sum(movie_id in relevant for movie_id in recommendations[:k])
-
-    return hits / k
-
-
-def recall_at_k(recommendations, relevant, k=10):
-
-    if len(relevant) == 0:
-        return 0.0
-
-    hits = sum(movie_id in relevant for movie_id in recommendations[:k])
-
-    return hits / len(relevant)
-
-
-def ndcg_at_k(recommendations, relevant, k=10):
-
-    if len(relevant) == 0:
-        return 0.0
-
-    dcg = sum(
-        1.0 / np.log2(rank + 2)
-        for rank, movie_id in enumerate(recommendations[:k])
-        if movie_id in relevant
-    )
-
-    ideal_length = min(k, len(relevant))
-
-    idcg = sum(1.0 / np.log2(rank + 2) for rank in range(ideal_length))
-
-    return dcg / idcg if idcg > 0 else 0.0
 
 
 # --------------------------------------------------
@@ -158,24 +124,6 @@ def evaluate_users(model, relevant, catalogue):
         )
 
     return pd.DataFrame(rows), recommendations
-
-
-# --------------------------------------------------
-# Catalogue coverage
-# --------------------------------------------------
-
-
-def catalogue_coverage(recommendations, catalogue):
-
-    recommended_items = set()
-
-    for recs in recommendations.values():
-        recommended_items.update(recs)
-
-    if len(catalogue) == 0:
-        return 0.0
-
-    return len(recommended_items & catalogue) / len(catalogue)
 
 
 # --------------------------------------------------

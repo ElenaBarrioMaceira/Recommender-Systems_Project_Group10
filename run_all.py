@@ -13,7 +13,9 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
@@ -96,9 +98,11 @@ def run_script(script_name):
         check=True,
     )
 
+
 def run_part2_script(script_name):
     """Execute Part 2 script using the existing runner."""
     run_script(f"part_2/{script_name}")
+
 
 def main():
 
@@ -118,9 +122,7 @@ def main():
 
     # Configure dataset path
     if args.data_path is not None:
-        os.environ["DATA_PATH"] = str(
-            args.data_path.expanduser().resolve()
-        )
+        os.environ["DATA_PATH"] = str(args.data_path.expanduser().resolve())
 
     data_path = os.environ.get("DATA_PATH")
 
@@ -139,15 +141,12 @@ def main():
     ]
 
     missing_files = [
-        filename
-        for filename in required_files
-        if not (dataset / filename).is_file()
+        filename for filename in required_files if not (dataset / filename).is_file()
     ]
 
     if missing_files:
         parser.error(
-            f"Missing MovieLens files in {dataset}: "
-            f"{', '.join(missing_files)}"
+            f"Missing MovieLens files in {dataset}: {', '.join(missing_files)}"
         )
 
     print("\nRECOMMENDER SYSTEMS - PART 1 and PART 2")
@@ -223,9 +222,9 @@ def main():
     # --------------------------------------------------
     # PART 2: FINAL TEST EVALUATION
     # --------------------------------------------------
-    
+
     print("\nPART 2 : FINAL TEST EVALUATION", flush=True)
-    
+
     run_part2_script("evaluate_content_based_test.py")
     run_part2_script("evaluate_mf_als_test.py")
     run_part2_script("test_user_knn_final.py")
@@ -233,9 +232,9 @@ def main():
     # --------------------------------------------------
     # PART 2: ADDITIONAL ANALYSIS
     # --------------------------------------------------
-    
+
     print("\nPART 2 : ADDITIONAL ANALYSES", flush=True)
-    
+
     run_part2_script("part2_content_analysis.py")
     run_part2_script("part2_mf_als_analysis.py")
     run_part2_script("part2_user_knn_analysis.py")
@@ -243,9 +242,9 @@ def main():
     # --------------------------------------------------
     # PART 2: COMPARISON BETWEEN MODELS
     # --------------------------------------------------
-    
+
     print("\nPART 2 : COMPARISON BETWEEN MODELS", flush=True)
-    
+
     run_part2_script("statistical_tests.py")
     run_part2_script("disaggregated.py")
     run_part2_script("sparsity_comparison.py")
@@ -297,6 +296,7 @@ def main():
     print("  - part2_statistical_results/paired_bootstrap_test.csv")
     print("  - part2_disaggregated_results/disaggregated_comparison_test.csv")
     print("  - part2_sparsity_results/sparsity_comparison_test.csv")
+
 
 if __name__ == "__main__":
     main()
