@@ -22,9 +22,9 @@ def main():
     test_filtered, catalogue = prepare_evaluation_data(train, test)
 
     model = MatrixFactorizationALS(
-        n_factors=120,
+        n_factors=80,
         n_iterations=20,
-        regularization=0.05,
+        regularization=0.1,
         seed=42,
     )
 
@@ -48,9 +48,9 @@ def main():
         [
             {
                 "Model": "Matrix Factorization ALS",
-                "Factors": 120,
+                "Factors": 80,
                 "Iterations": 20,
-                "Regularization": 0.05,
+                "Regularization": 0.1,
                 "Seed": 42,
                 **results,
             }

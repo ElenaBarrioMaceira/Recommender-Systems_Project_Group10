@@ -21,7 +21,7 @@ def main():
     print("Movies:", len(movies))
 
     model = MatrixFactorizationALS(
-        n_factors=120, n_iterations=20, regularization=0.05, seed=42
+        n_factors=80, n_iterations=20, regularization=0.1, seed=42
     )
 
     model.fit(train)

@@ -66,7 +66,7 @@ OUTPUT_DIR = ROOT_DIR / "part2_mf_als_results"
 def train_model(train):
 
     model = MatrixFactorizationALS(
-        n_factors=120, n_iterations=20, regularization=0.05, seed=SEED
+        n_factors=80, n_iterations=20, regularization=0.1, seed=SEED
     )
 
     model.fit(train)
@@ -332,9 +332,9 @@ def main():
     overall.update(
         {
             "Model": "Matrix Factorization ALS",
-            "Factors": 120,
+            "Factors": 80,
             "Iterations": 20,
-            "Regularization": 0.05,
+            "Regularization": 0.1,
             "Seed": SEED,
             "Train fraction": 1.0,
             "Training interactions": len(train),
@@ -396,9 +396,9 @@ def main():
         metrics.update(
             {
                 "Model": "Matrix Factorization ALS",
-                "Factors": 120,
+                "Factors": 80,
                 "Iterations": 20,
-                "Regularization": 0.05,
+                "Regularization": 0.1,
                 "Seed": SEED,
                 "Train fraction": fraction,
                 "Training interactions": len(reduced_train),
