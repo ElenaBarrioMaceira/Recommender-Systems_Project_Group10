@@ -325,9 +325,15 @@ def analyse_item_popularity(
 
 def create_train_subsets(train):
 
+    # Sort interactions to ensure reproducible sampling
+    # across different computers and Python versions.
+    sorted_train = train.sort_values(
+        ["UserID", "MovieID", "Rating", "Timestamp"]
+    ).reset_index(drop=True)
+
     rng = np.random.default_rng(SEED)
 
-    shuffled_indices = rng.permutation(len(train))
+    shuffled_indices = rng.permutation(len(sorted_train))
 
     subsets = {}
 
@@ -335,19 +341,20 @@ def create_train_subsets(train):
 
         if fraction == 1.0:
 
+            # Keep the original full training data unchanged.
             subsets[fraction] = train.copy()
 
         else:
 
             sample_size = round(
-                len(train) * fraction
+                len(sorted_train) * fraction
             )
 
             selected_indices = shuffled_indices[
                 :sample_size
             ]
 
-            subsets[fraction] = train.iloc[
+            subsets[fraction] = sorted_train.iloc[
                 selected_indices
             ].copy()
 
