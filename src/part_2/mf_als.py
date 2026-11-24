@@ -75,3 +75,22 @@ class MatrixFactorizationALS:
         scores = self._score_user(user_id, candidates)
         order = np.lexsort((np.asarray(candidates), -scores))
         return [candidates[i] for i in order[:top_n]]
+
+    def get_candidates(self, user_id: int, top_n: int = 100) -> pd.DataFrame:
+        """Return the top N unseen movies and their prediction scores."""
+        # This excludes movies already rated during training
+        seen = self._user_seen_movies.get(user_id, set())
+        candidates = [movie for movie in self._movie_ids if movie not in seen]
+
+        if not candidates:
+            return pd.DataFrame(columns=["MovieID", "Score"])
+
+        scores = self._score_user(user_id, candidates)
+
+        # Sort by descending score
+        order = np.lexsort((np.asarray(candidates), -scores))
+        order = order[:top_n]
+
+        return pd.DataFrame(
+            {"MovieID": [candidates[i] for i in order], "Score": scores[order]}
+        )
