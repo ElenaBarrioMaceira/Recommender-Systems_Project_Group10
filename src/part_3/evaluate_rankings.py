@@ -17,7 +17,9 @@ from evaluation import (
     catalogue_coverage,
     get_relevant_items,
     ndcg_at_k,
+    precision_at_k,
     prepare_evaluation_data,
+    recall_at_k,
 )
 
 TOP_K = 10
@@ -32,7 +34,7 @@ METRIC_LABELS = {
 
 
 def read_rankings(path):
-    """Read rankings exported as one row per recommended movie."""
+    """Read one CSV row per recommended movie and validate each top-10 list."""
     rows = pd.read_csv(path)
     missing_columns = set(RANKING_COLUMNS) - set(rows.columns)
     if missing_columns:
@@ -58,7 +60,6 @@ def read_rankings(path):
     configurations = {}
     expected_ranks = list(range(1, TOP_K + 1))
 
-    # Keep the baseline group even though its lambda is blank.
     for (variant, weight), group in rows.groupby(["variant", "lambda"], dropna=False):
         rankings = {}
         for user_id, user_rows in group.groupby("UserID"):
@@ -66,7 +67,7 @@ def read_rankings(path):
             movie_ids = ordered["MovieID"].tolist()
             if ordered["rank"].tolist() != expected_ranks or len(set(movie_ids)) != TOP_K:
                 raise ValueError(
-                    f"Expected {TOP_K} distinct movies with ranks 1–{TOP_K} "
+                    f"Expected {TOP_K} distinct movies with ranks 1 to {TOP_K} "
                     f"for user {user_id}, variant={variant}, lambda={weight}."
                 )
             rankings[user_id] = movie_ids
@@ -98,15 +99,15 @@ def build_genre_vectors(movies, catalogue):
 
 
 def intra_list_diversity(movie_ids, cosine_vectors):
-    """Mean cosine distance across pairs of movies in one ranking."""
+    """Return the mean cosine distance across pairs in a ranking."""
     vectors = np.stack([cosine_vectors[movie_id] for movie_id in movie_ids])
-    similarity = vectors @ vectors.T
+    similarities = vectors @ vectors.T
     pairs = np.triu_indices(len(movie_ids), k=1)
-    return float(np.clip(1 - similarity[pairs], 0, 1).mean())
+    return float(np.clip(1 - similarities[pairs], 0, 1).mean())
 
 
 def gini_index(rankings, catalogue):
-    """Gini of recommendation counts over the full training catalogue."""
+    """Compute Gini over recommendation counts, including zero-count movies."""
     counts = pd.Series(
         [movie_id for movie_ids in rankings.values() for movie_id in movie_ids]
     ).value_counts()
@@ -122,12 +123,13 @@ def genre_distribution(movie_ids, genre_shares):
 
 
 def calibration_error(movie_ids, profile, genre_shares):
-    """Total variation distance between training and recommendation genre shares."""
+    """Return the total variation distance between the two genre distributions."""
     recommended_profile = genre_distribution(movie_ids, genre_shares)
     return float(0.5 * np.abs(profile - recommended_profile).sum())
 
 
 def evaluate_rankings(configurations, train, test, movies):
+    """Evaluate every configuration on the same Part 2 test cohort."""
     test_filtered, catalogue = prepare_evaluation_data(train, test)
     relevant_by_user = get_relevant_items(test_filtered)
     if not relevant_by_user:
@@ -161,6 +163,8 @@ def evaluate_rankings(configurations, train, test, movies):
                 f"{extra} extra users compared with the Part 2 test cohort."
             )
 
+        precision_scores = []
+        recall_scores = []
         ndcg_scores = []
         diversity_scores = []
         calibration_scores = []
@@ -170,9 +174,12 @@ def evaluate_rankings(configurations, train, test, movies):
             if not movie_set.issubset(catalogue):
                 raise ValueError(f"Ranking contains an out-of-catalogue movie for {user_id}.")
             if movie_set.intersection(seen[user_id]):
-                raise ValueError(f"Ranking contains a training movie already seen by {user_id}.")
+                raise ValueError(f"Ranking contains a previously rated movie for {user_id}.")
 
-            ndcg_scores.append(ndcg_at_k(movie_ids, relevant_by_user[user_id], TOP_K))
+            relevant_items = relevant_by_user[user_id]
+            precision_scores.append(precision_at_k(movie_ids, relevant_items, TOP_K))
+            recall_scores.append(recall_at_k(movie_ids, relevant_items, TOP_K))
+            ndcg_scores.append(ndcg_at_k(movie_ids, relevant_items, TOP_K))
             diversity_scores.append(intra_list_diversity(movie_ids, cosine_vectors))
             calibration_scores.append(
                 calibration_error(movie_ids, profiles[user_id], genre_shares)
@@ -183,6 +190,8 @@ def evaluate_rankings(configurations, train, test, movies):
                 "variant": variant,
                 "lambda": weight,
                 "evaluated_users": len(rankings),
+                "precision_at_10": np.mean(precision_scores),
+                "recall_at_10": np.mean(recall_scores),
                 "ndcg_at_10": np.mean(ndcg_scores),
                 "ild": np.mean(diversity_scores),
                 "coverage": catalogue_coverage(rankings, catalogue),
@@ -243,7 +252,7 @@ def save_plots(results, output_dir):
 
 
 def make_demo(output_dir):
-    """Create a small CSV and matching train/test data for a local smoke test."""
+    """Create synthetic rankings and train/test data for a quick check."""
     movies = pd.DataFrame(
         {
             "MovieID": range(1, 13),
