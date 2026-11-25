@@ -1,158 +1,120 @@
-from pathlib import Path
 import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
-#Add src to the pythonh import path
 SRC_DIR = Path(__file__).resolve().parents[1]
 ROOT_DIR = SRC_DIR.parent
 sys.path.insert(0, str(SRC_DIR))
 
 from data_analysis import load_data_with_splits
-from evaluation import prepare_evaluation_data
+from evaluation import get_relevant_items, prepare_evaluation_data
 from part_2.mf_als import MatrixFactorizationALS
 from part_3.genre_vectors import build_genre_vectors
 from part_3.mmr import mmr_rerank
 
-#----------------------------------------
-#Configuration
-#----------------------------------------
 TOP_CANDIDATES = 100
 TOP_N = 10
-LAMBDA_VALUES = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+LAMBDA_VALUES = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
+OUTPUT_FILE = ROOT_DIR / "part3_mmr_results" / "mmr_rankings.csv"
+RANKING_COLUMNS = ["variant", "lambda", "UserID", "MovieID", "rank"]
 
-OUTPUT_DIR = ROOT_DIR / "part3_mmr_results"
-OUTPUT_FILE = OUTPUT_DIR / "mmr_rankings.csv"
 
-#----------------------------------------
-#Prepare evaluation users
-#----------------------------------------
-
-#Select the same warm-start evaluation users as Part 2
-def get_evaluation_users(train, test):
-    test_filtered, catalogue = prepare_evaluation_data(train, test)
-    relevant = (test_filtered[test_filtered["Rating"] >= 4].groupby("UserID")["MovieID"].apply(set).to_dict())
-    return sorted(relevant.keys()), set(catalogue)
-
-#----------------------------------------
-#Save ranking rows
-#----------------------------------------
-
-#Add one csv row per recommended movie
 def add_ranking_rows(rows, variant, lambda_value, user_id, recommendations):
-    for rank, movie_id in enumerate(recommendations, start = 1):
-        rows.append({
-            "variant": variant,
-            "lambda": lambda_value,
-            "UserID": int(user_id),
-            "MovieID": int(movie_id),
-            "rank": rank
-        })
+    for rank, movie_id in enumerate(recommendations, start=1):
+        rows.append(
+            {
+                "variant": variant,
+                "lambda": lambda_value,
+                "UserID": int(user_id),
+                "MovieID": int(movie_id),
+                "rank": rank,
+            }
+        )
 
-#----------------------------------------
-#Main experiment
-#----------------------------------------
+
 def main():
-    print("Loading MovieLens 1M data...", flush = True)
-
+    print("Loading MovieLens 1M data...", flush=True)
     data = load_data_with_splits()
-    train = data.train
-    test = data.test
-    movies = data.movie_data
+    train, test = data.train, data.test
 
-    #Use the same evaluation cohort as Part 2
-    evaluation_users, catalogue = get_evaluation_users(train, test)
+    test_filtered, catalogue = prepare_evaluation_data(train, test)
+    evaluation_users = sorted(get_relevant_items(test_filtered))
+    if len(evaluation_users) != 992:
+        raise ValueError(f"Expected 992 test users, found {len(evaluation_users)}.")
 
-    print("Training ratings:", len(train))
-    print("Evaluation users:", len(evaluation_users))
-    print("Catalogue size:", len(catalogue))
+    print(f"Evaluation users: {len(evaluation_users)}", flush=True)
+    print(f"Catalogue size: {len(catalogue)}", flush=True)
+    genre_vectors, _ = build_genre_vectors(data.movie_data)
 
-    assert len(evaluation_users) == 992, ("Evaluation cohort differs from the expected 992 users")
-
-    #Build genre-only representations
-    print("\nBuilding genre vectors...", flush = True)
-
-    genre_vectors, all_genres = build_genre_vectors(movies)
-
-    print("Genres:", len(all_genres))
-    print("Movies with genre vectors:", len(genre_vectors))
-
-    #Train the selected MF-ALS model
-    print("\nTraining MF-ALS...", flush = True)
-
-    model = MatrixFactorizationALS(n_factors = 80, n_iterations = 20, regularization = 0.1, seed = 42)
+    print("Training MF-ALS...", flush=True)
+    model = MatrixFactorizationALS(
+        n_factors=80,
+        n_iterations=20,
+        regularization=0.1,
+        seed=42,
+    )
     model.fit(train)
 
-    print("MF-ALS training completed!", flush = True)
+    print("Generating baseline and MMR rankings...", flush=True)
+    rows = []
 
-    #Store all recommendations
-    results = []
-
-    print("\nGenerating original and MMR rankings...", flush = True)
-
-    for user_number, user_id in enumerate(evaluation_users, start = 1):
-        user_id = int(user_id)
-        #Retreive the top q00 candidates only once per user
-        candidates = model.get_candidates(user_id, top_n = TOP_CANDIDATES)
+    for user_number, user_id in enumerate(evaluation_users, start=1):
+        candidates = model.get_candidates(user_id, top_n=TOP_CANDIDATES)
 
         if len(candidates) != TOP_CANDIDATES:
-            raise ValueError(f"Unexpected candidate count per user {user_id}")
+            raise ValueError(f"Expected {TOP_CANDIDATES} candidates for user {user_id}.")
         if not candidates["MovieID"].is_unique:
-            raise ValueError(f"Duplicate candidate movies for user {user_id}")
+            raise ValueError(f"Duplicate candidates for user {user_id}.")
         if not np.isfinite(candidates["Score"]).all():
-            raise ValueError(f"Invalid MF-ALS scores for user {user_id}")
+            raise ValueError(f"Invalid candidate scores for user {user_id}.")
 
-        candidate_ids = [int(movie_id) for movie_id in candidates["MovieID"]]
-
+        candidate_ids = candidates["MovieID"].astype(int).tolist()
         if not set(candidate_ids).issubset(catalogue):
-            raise ValueError(f"Candidates outside catalogue for user {user_id}")
+            raise ValueError(f"Candidate outside the training catalogue for user {user_id}.")
 
-        #Convert MF-ALS output into the format requires by MMR
-        candidate_scores = {int(movie_id): float(score) for movie_id, score in zip(candidates["MovieID"], candidates["Score"])}
-        #Original MF-ALS top 10
+        candidate_scores = dict(zip(candidate_ids, candidates["Score"].astype(float)))
         original_top10 = candidate_ids[:TOP_N]
-        #Store the original ranking as a reference
-        add_ranking_rows(results, variant = "original", lambda_value = 1.0, user_id = user_id, recommendations = original_top10)
-        
-        #Apply MMR to the same candidate pool for every lambda
+
+        add_ranking_rows(rows, "baseline", None, user_id, original_top10)
+
         for lambda_value in LAMBDA_VALUES:
-            reranked = mmr_rerank(candidate_scores = candidate_scores, genre_vectors = genre_vectors, lambda_value = lambda_value, top_n = TOP_N)
-
-            if len(reranked) != TOP_N:
-                raise ValueError(f"Incorrect ranking length for user {user_id}")
-            if len(set(reranked)) != TOP_N:
-                raise ValueError(f"Duplicate recommendations for user {user_id}")
+            reranked = mmr_rerank(
+                candidate_scores=candidate_scores,
+                genre_vectors=genre_vectors,
+                lambda_value=lambda_value,
+                top_n=TOP_N,
+            )
+            if len(reranked) != TOP_N or len(set(reranked)) != TOP_N:
+                raise ValueError(f"Invalid top 10 for user {user_id}, lambda={lambda_value}.")
             if not set(reranked).issubset(candidate_scores):
-                raise ValueError(f"MMR selected an invalid candidate for user {user_id}")
-            if lambda_value == 1.0:
-                if reranked != original_top10:
-                    raise AssertionError(f"Lambda = 1 does not match MF-ALS for user {user_id}")
+                raise ValueError(f"MMR selected a movie outside the pool for user {user_id}.")
+            if lambda_value == 1.0 and reranked != original_top10:
+                raise ValueError(f"Lambda=1 did not match the baseline for user {user_id}.")
 
-            #Save reranked recommendations
-            add_ranking_rows(results, variant = "mmr", lambda_value = lambda_value, user_id = user_id, recommendations = reranked)
+            add_ranking_rows(rows, "mmr", lambda_value, user_id, reranked)
 
-#----------------------------------------
-#Export results
-#----------------------------------------  
-    OUTPUT_DIR.mkdir(parents = True, exist_ok = True)
+        if user_number % 100 == 0:
+            print(f"Finished {user_number}/{len(evaluation_users)} users", flush=True)
 
-    results_df = pd.DataFrame(results, columns = ["variant", "lamda", "UserID", "MovieID", "rank"])
-    expected_rows = len(evaluation_users) * TOP_N * (len(LAMBDA_VALUES) + 1)
+    results = pd.DataFrame(rows, columns=RANKING_COLUMNS)
+    rows_per_configuration = len(evaluation_users) * TOP_N
+    expected_counts = {weight: rows_per_configuration for weight in LAMBDA_VALUES}
 
-    assert len(results_df) == expected_rows, ("Incorrect number od output rows")
+    baseline = results.loc[results["variant"].eq("baseline")]
+    mmr = results.loc[results["variant"].eq("mmr")]
+    if len(baseline) != rows_per_configuration or baseline["lambda"].notna().any():
+        raise ValueError("Incorrect baseline export.")
+    if mmr["lambda"].isna().any() or mmr["lambda"].value_counts().to_dict() != expected_counts:
+        raise ValueError("Incorrect MMR export. Expected a complete ranking for every lambda.")
 
-    results_df.to_csv(OUTPUT_FILE, index = False)
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    results.to_csv(OUTPUT_FILE, index=False)
 
-    print("\nFinal results")
-    print("Users evaluated:", len(evaluation_users))
-    print("Lambda values:", LAMBDA_VALUES)
-    print("Total CSV rows:", len(results_df))
-    print("Results saved to:", OUTPUT_FILE)
-    print("\nAll lambda = 1 checks passed")
-    print("MMR experiments completed succesfully!")
+    print(f"Saved {len(results)} rows to {OUTPUT_FILE}", flush=True)
+    print("All lambda = 1 checks passed.", flush=True)
+
 
 if __name__ == "__main__":
     main()
-
-    
-
