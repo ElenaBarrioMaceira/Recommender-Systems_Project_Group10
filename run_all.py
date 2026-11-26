@@ -1,11 +1,14 @@
 """
-Reproduce all Part 1 and Part 2 experiments and data characterization figures.
+Reproduce all Part 1, Part 2 and Part 3 experiments and data characterization figures.
 
 Usage:
     python run_all.py
 
 Alternatively:
     python run_all.py --data-path data/ml-1m
+
+Part 3 only:
+    python run_all.py --part3-only --data-path data/ml-1m
 """
 
 import argparse
@@ -82,7 +85,7 @@ def generate_data_figures(output_dir):
         plt.show = original_show
 
 
-def run_script(script_name):
+def run_script(script_name, *script_args):
     """Execute an existing project script and stop if it fails."""
 
     script_path = SRC / script_name
@@ -91,10 +94,14 @@ def run_script(script_name):
     print(f"Running: {script_name}", flush=True)
     print(f"{'=' * 60}", flush=True)
 
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        [str(SRC)] + ([env["PYTHONPATH"]] if env.get("PYTHONPATH") else [])
+    )
     subprocess.run(
-        [sys.executable, str(script_path)],
+        [sys.executable, str(script_path), *map(str, script_args)],
         cwd=ROOT,
-        env=os.environ.copy(),
+        env=env,
         check=True,
     )
 
@@ -104,10 +111,57 @@ def run_part2_script(script_name):
     run_script(f"part_2/{script_name}")
 
 
+def run_part3_script(script_name, *script_args):
+    """Execute Part 3 script with its command-line arguments."""
+    run_script(f"part_3/{script_name}", *script_args)
+
+
+def run_part3(dataset):
+    """Reproduce Track A: MF-ALS baseline, MMR sweep and evaluation."""
+    baseline_dir = ROOT / "results" / "part_3" / "mf_als_baseline"
+    rankings_path = ROOT / "part3_mmr_results" / "mmr_rankings.csv"
+    output_dir = ROOT / "results" / "part_3"
+
+    print("\nPART 3 : MF-ALS BASELINE", flush=True)
+    run_part3_script(
+        "evaluate_mf_als_baseline.py",
+        "--data-path",
+        dataset,
+        "--output-dir",
+        baseline_dir,
+    )
+
+    print("\nPART 3 : MMR LAMBDA SWEEP", flush=True)
+    run_part3_script("mmr_experiments.py")
+
+    print("\nPART 3 : RANKING EVALUATION AND FIGURES", flush=True)
+    run_part3_script(
+        "evaluate_rankings.py",
+        "--rankings",
+        rankings_path,
+        "--data-path",
+        dataset,
+        "--output-dir",
+        output_dir,
+    )
+
+
+def print_part3_summary():
+    print("\nPart 3 - Generated CSV files:")
+    print("  - results/part_3/mf_als_baseline/rankings.csv")
+    print("  - results/part_3/mf_als_baseline/track_a_metrics.csv")
+    print("  - part3_mmr_results/mmr_rankings.csv")
+    print("  - results/part_3/track_a_metrics.csv")
+
+    print("\nPart 3 - Generated figures:")
+    print("  - results/part_3/accuracy_diversity.png")
+    print("  - results/part_3/metrics_by_lambda.png")
+
+
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Reproduce all Part 1 and Part 2 experiments."
+        description="Reproduce all Part 1, Part 2 and Part 3 experiments."
     )
 
     parser.add_argument(
@@ -116,7 +170,17 @@ def main():
         help="Path to the extracted MovieLens 1M dataset.",
     )
 
+    parser.add_argument(
+        "--part3-only",
+        action="store_true",
+        help="Run only Part 3 Track A experiments and evaluation.",
+    )
+
     args = parser.parse_args()
+
+    # Resolve an explicit CLI path relative to the caller before changing cwd.
+    if args.data_path is not None:
+        args.data_path = args.data_path.expanduser().resolve()
 
     os.chdir(ROOT)
 
@@ -132,7 +196,8 @@ def main():
             "Use --data-path to specify the dataset location."
         )
 
-    dataset = Path(data_path)
+    dataset = Path(data_path).expanduser().resolve()
+    os.environ["DATA_PATH"] = str(dataset)
 
     required_files = [
         "ratings.dat",
@@ -149,9 +214,18 @@ def main():
             f"Missing MovieLens files in {dataset}: {', '.join(missing_files)}"
         )
 
-    print("\nRECOMMENDER SYSTEMS - PART 1 and PART 2")
+    print(
+        "\nRECOMMENDER SYSTEMS - "
+        + ("PART 3" if args.part3_only else "PARTS 1, 2 and 3")
+    )
     print("Reproducing experiments and results")
     print(f"Dataset: {dataset}")
+
+    if args.part3_only:
+        run_part3(dataset)
+        print_part3_summary()
+        print("\nPART 3 COMPLETED SUCCESSFULLY")
+        return
 
     # --------------------------------------------------
     # STEP 1: DATA CHARACTERIZATION
@@ -250,6 +324,12 @@ def main():
     run_part2_script("sparsity_comparison.py")
 
     # --------------------------------------------------
+    # PART 3: BEYOND ACCURACY (TRACK A)
+    # --------------------------------------------------
+
+    run_part3(dataset)
+
+    # --------------------------------------------------
     # SUMMARY
     # --------------------------------------------------
 
@@ -296,6 +376,8 @@ def main():
     print("  - part2_statistical_results/paired_bootstrap_test.csv")
     print("  - part2_disaggregated_results/disaggregated_comparison_test.csv")
     print("  - part2_sparsity_results/sparsity_comparison_test.csv")
+
+    print_part3_summary()
 
 
 if __name__ == "__main__":
