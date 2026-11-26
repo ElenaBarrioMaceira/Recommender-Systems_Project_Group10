@@ -368,6 +368,10 @@ The main entry point is:
 ```bash
 python run_all.py
 ```
+If you want to only run the part 3 experiments, use the following command:
+```bash
+python run_all.py --part3-only
+```
 
 Run this command from the project root directory after installing the dependencies and configuring the dataset path.
 
